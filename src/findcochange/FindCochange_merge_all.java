@@ -3,19 +3,21 @@ package findcochange;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-class Store_change {
-
-    String filename;
-    int startline;
-    int endline;
-}
-
-public class FindCochange_all {
+// This class is already declared in "FindCochange_all.java" file, it will be availabe from that file here!!!
+//class Store_change{
+//    String filename;
+//    int startline;
+//    int endline;
+//}
+public class FindCochange_merge_all {
 
     public static void main(String[] args) throws Exception {
 
@@ -23,23 +25,19 @@ public class FindCochange_all {
         File list_changes;
         BufferedReader br2 = null;
         Store_change[] stored_change = new Store_change[1000];
-        String st2, qr_detected, qr_actual, qr_change_count, pr_filename, cur_filename, clone_results_table, qr_insert, change_id = "", list_cochange = "",ss;
+        String st2, qr_detected, qr_actual, qr_change_count, pr_filename, cur_filename, clone_results_table, qr_insert, change_id = "", list_cochange = "", list_used_clones = "", list_total_clone = "";
         String[] splited1;
         int b1, e1, ac_b1, ac_e1, pr_startline, pr_endline, cur_startline, cur_endline, chng_detect, chng_actual, used_clone, total_clone, counted, change_ptr;
         int k, duplicate = 0, comma_flg = 0;
-        //Name of the Subject Systems    
-        String[] subject_systems = {"jabref"};
-        //String[] subject_systems = {"brlcad", "carol", "ctags", "freecol", "jabref", "jedit", "camellia", "qmailadmin"};
-        int[] total_changes = {19349};
-        //total_changes: "brlcad=9805", "carol=12929", "ctags=3517", "freecol=22327", "jabref=19349", "jedit=11780", "camellia=4333", "qmailadmin=892"
-        //int[] total_changes = {9805, 4333, 12929, 3517, 22327, 19349, 11780, 892};
-        String[] clone_detector = {"cloneworks"};        
-        //String[] clone_detector = {"conqat", "deckard_2_0", "iclones", "nicad5", "simcad", "simian"};   
-        String resultGrouping="ClonePair"; //CloneClass or ClonePair
-        //int ss_sl=0;
-        for (int ss_sl = 0; ss_sl < 1; ss_sl++) {
-            ss=subject_systems[ss_sl];
-        //for (String ss : subject_systems) {
+        //String ss = "freecol"; //Name of the Subject System      
+        String[] subject_systems = {"carol", "freecol", "jabref", "jedit"};
+        //String clone_detector="conqat"; //Name of the Clone Detector
+        String[] clone_detector = {"conqat", "deckard_2_0", "iclones", "nicad5", "simcad", "simian"};
+        //String[] clone_detector = {"iclones", "nicad5", "simcad", "simian"};
+        //String[] clone_detector = {"conqat"}; //When Only One Detector needs to be used. 
+
+        for (String ss : subject_systems) {
+
             //for (int num : numbers)  
             for (String cd : clone_detector) {
                 clone_results_table = "clones_" + cd;
@@ -73,11 +71,19 @@ public class FindCochange_all {
 
                     list_changes = new File("data_files/" + ss + "_changes.txt");
                     br2 = new BufferedReader(new FileReader(list_changes));
+                    // For printing the statistics
+                    Path path = Paths.get("data_files/" + ss + "_changes.txt");
+                    long lineCount = Files.lines(path).count();
+                    int lines = 0;
+                    //*************************
                     int pr_version = 0, total_change = -1;
-                    int change_sl=1;
                     while ((st2 = br2.readLine()) != null) {
+                        lines++;
+                        System.out.println("Working for: " + ss + ", " + cd + " (" + lines + "/ " + lineCount + ")");
                         comma_flg = 0;
                         list_cochange = "";
+                        list_used_clones = "";
+                        list_total_clone = "";
                         splited1 = st2.split("\\s+");
                         b1 = Integer.parseInt(splited1[3]);
                         e1 = Integer.parseInt(splited1[4]);
@@ -94,7 +100,7 @@ public class FindCochange_all {
                         }
 
                         qr_detected = "SELECT * FROM `" + clone_results_table + "` WHERE "
-                                + "`version`=" + splited1[0] + " AND `"+resultGrouping+"` IN (SELECT `"+resultGrouping+"` FROM `" + clone_results_table + "` WHERE "
+                                + "`version`=" + splited1[0] + " AND `CloneClass` IN (SELECT `CloneClass` FROM `" + clone_results_table + "` WHERE "
                                 + "`version`=" + splited1[0] + " AND `file_name`='" + splited1[1] + "' AND ((`endline`>=" + b1 + " AND `endline`<=" + e1 + ") "
                                 + " OR (`startline`>=" + b1 + " AND `startline`<=" + e1 + ") OR (`startline`<" + b1 + " AND `endline`>" + e1 + "))) AND "
                                 + " `id` NOT IN (SELECT `id` FROM `" + clone_results_table + "` WHERE `version`=" + splited1[0] + " AND `file_name`='" + splited1[1] + "' AND "
@@ -115,7 +121,11 @@ public class FindCochange_all {
                             cur_startline = rs_detected.getInt("startline");
                             cur_endline = rs_detected.getInt("endline");
                             if (!(pr_filename.equals(cur_filename) && pr_startline == cur_startline && pr_endline == cur_endline)) {
+                                if (total_clone > 0) {
+                                    list_total_clone += ", ";
+                                }
                                 total_clone++;
+                                list_total_clone += rs_detected.getString("id");
                                 qr_actual = "SELECT * FROM `change_info` WHERE `version`=" + splited1[0] + " AND `file_name`='" + cur_filename + "'";
                                 //System.out.println(qr_actual);
                                 ResultSet rs_actual = stm2.executeQuery(qr_actual);
@@ -150,6 +160,10 @@ public class FindCochange_all {
                                             comma_flg = 1;
                                         }
                                         if (counted == 0) {
+                                            if (used_clone > 0) {
+                                                list_used_clones += ", ";
+                                            }
+                                            list_used_clones += rs_detected.getString("id");
                                             used_clone++;
                                             counted = 1;
                                         }
@@ -161,18 +175,18 @@ public class FindCochange_all {
 
                             }
                         }
-                        qr_insert = "INSERT INTO `cc_" + cd + "` (`change_id`, `version`, `change_detect`, `change_total`, `clone_used`, `clone_pr_total`, `list_cochange`) "
+                        qr_insert = "INSERT INTO `list_cc_" + cd + "` (`change_id`, `version`, `change_detect`, `change_total`, `clone_used`, `clone_pr_total`, `list_cochange`, `list_used_clones`, `list_total_clone`) "
                                 + " VALUES ((SELECT `id` FROM `change_info` WHERE `version`='" + splited1[0] + "' AND `file_name`='" + splited1[1] + "' AND `startline`='" + splited1[3] + "' AND `endline`='" + splited1[4] + "'),"
-                                + "'" + splited1[0] + "', '" + chng_detect + "', '" + (total_change - 1) + "', '" + used_clone + "', '" + total_clone + "', '" + list_cochange + "')";
+                                + "'" + splited1[0] + "', '" + chng_detect + "', '" + (total_change - 1) + "', '" + used_clone + "', '" + total_clone + "', '" + list_cochange + "', '" + list_used_clones + "', '" + list_total_clone + "')";
                         if (chng_detect > 0) {
-                            System.out.println("Working: "+ss+", "+cd+", " + change_sl+"/"+total_changes[ss_sl] + "\nNumber of Cochanges: " + chng_detect + "\nList of Cochanges: " + list_cochange);
+                            //System.out.println(qr_detected);
+                            //System.out.println("Working for Change: " + st2 + "\nNumber of Cochanges: " + chng_detect + "\nList of Cochanges: " + list_cochange);
+                            //System.out.println("Number of Used Clone(s): " + used_clone + "\nList of Used Clone(s): " + list_used_clones + "\nList of Total Clone(s): " + list_total_clone);
                             //System.out.println(qr_insert);
-                            //System.out.println("\n-------\n"+qr_detected);
                         }
                         stm4.executeUpdate(qr_insert);
                         //System.out.println(splited1[0]+", "+splited1[1]+", "+splited1[3]+", "+splited1[4]+": "+"Detected Change: "+chng_detect+" Total Change: "+(total_change-1)+" Used Clone(s): "+used_clone+" Predicted Clone(s): "+total_clone);
                         //System.out.println("*****************");
-                        change_sl++;
                     }
 
                     stm1.close();
@@ -188,7 +202,6 @@ public class FindCochange_all {
                     System.out.println("Could not connect to the database " + e.getMessage());
                 }
             }
-            //ss_sl++;
         }
 
     }
