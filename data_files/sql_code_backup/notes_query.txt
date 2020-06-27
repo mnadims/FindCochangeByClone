@@ -1,0 +1,11 @@
+SELECT AVG(t.num_clones) FROM (SELECT `version` revision, COUNT(`file_name`) num_clones FROM `clones_conqat` GROUP BY `version` ORDER by revision DESC) t;
+
+SELECT AVG(t.num_clones) FROM (SELECT `version` revision, COUNT(`file_name`) num_clones FROM `clones_deckard_2_0` GROUP BY `version` ORDER by revision DESC) t;
+
+SELECT AVG(t.num_clones) FROM (SELECT `version` revision, COUNT(`file_name`) num_clones FROM `clones_iclones` GROUP BY `version` ORDER by revision DESC) t;
+
+SELECT AVG(t.num_clones) FROM (SELECT `version` revision, COUNT(`file_name`) num_clones FROM `clones_nicad5` GROUP BY `version` ORDER by revision DESC) t;
+
+SELECT AVG(t.num_clones) FROM (SELECT `version` revision, COUNT(`file_name`) num_clones FROM `clones_simcad` GROUP BY `version` ORDER by revision DESC) t;
+
+SELECT AVG(t.num_clones) FROM (SELECT `version` revision, COUNT(`file_name`) num_clones FROM `clones_simian` GROUP BY `version` ORDER by revision DESC) t;
