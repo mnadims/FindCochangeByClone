@@ -21,11 +21,11 @@ public class ConnectToMySQL {
             Class.forName(driverName);
 
             // Create a connection to the database
-            String serverName = "127.0.0.1";
+            String serverName = "127.0.0.1:3308";
 
-            String schema = "freecol";
+            String schema = "qmailadmin";
 
-            String url = "jdbc:mysql://" + serverName + "/" + schema;
+            String url = "jdbc:mysql://" + serverName + "/cochange_" + schema;
 
             String username = "root";
 

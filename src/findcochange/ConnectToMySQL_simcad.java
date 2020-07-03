@@ -23,11 +23,11 @@ public class ConnectToMySQL_simcad {
             Class.forName(driverName);
 
             // Create a connection to the database
-            String serverName = "127.0.0.1";
+           String serverName = "127.0.0.1:3308";
 
-            String schema = "cochange_carol";
+            String schema = "qmailadmin";
 
-            String url = "jdbc:mysql://" + serverName + "/" + schema;
+            String url = "jdbc:mysql://" + serverName + "/cochange_" + schema;
 
             String username = "root";
 
@@ -45,9 +45,9 @@ public class ConnectToMySQL_simcad {
             Pattern p = Pattern.compile("\"([^\"]*)\"");
             conn = DriverManager.getConnection(url, username, password);
             Statement st = conn.createStatement();
-            for (i = 1; i <= 1700; i++) {
+            for (i = 1; i <= 317; i++) {
                 //version-2_blocks-blind-clones-0.3.xml
-                f_nicad = new File("H:/Detected_Clone_Results/simcad_carol_output/version-"+i+"/simcad_block_clone-groups_type-1-2-3_generous.xml");
+                f_nicad = new File("H:/detected_clone_results/simcad_"+schema+"/revision-"+i+"/simcad_block_clone-groups_type-1-2-3_generous.xml");
                 if (f_nicad.exists()) {
                     br2 = new BufferedReader(new FileReader(f_nicad));                
                     cur_clone_class=0;
@@ -57,7 +57,7 @@ public class ConnectToMySQL_simcad {
                             Matcher m = p.matcher(st2);
                             m.find();
                             fileloc = m.group(1);
-                            filename = fileloc.replaceAll("/home/mnadims/subject_system/carol/repository/version-"+i+"/", "");                            
+                            filename = fileloc.replace("../subject_systems/"+schema+"/revision-"+i+"/", "").replace(".ifdefed", "");                            
                             //filename = filename.replaceAll(".ifdefed", "");
                             m.find();
                             startline = Integer.parseInt(m.group(1));

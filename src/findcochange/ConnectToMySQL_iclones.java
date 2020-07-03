@@ -21,12 +21,13 @@ public class ConnectToMySQL_iclones {
             Class.forName(driverName);
 
             // Create a connection to the database
-            String serverName = "127.0.0.1";
+            // Create a connection to the database
+            String serverName = "127.0.0.1:3308";
 
-            String schema = "freecol";
+            String schema = "qmailadmin";
 
-            String url = "jdbc:mysql://" + serverName + "/" + schema;
-
+            String url = "jdbc:mysql://" + serverName + "/cochange_" + schema;
+            
             String username = "root";
 
             String password = "";
@@ -43,9 +44,9 @@ public class ConnectToMySQL_iclones {
 
             conn = DriverManager.getConnection(url, username, password);
             Statement st = conn.createStatement();
-            for (i = 1000; i <= 2000; i++) {
-                f_iclones = new File("H:\\Detected_Clone_Results\\iclones_freecol_output\\iclones_freecol_out_v"+i+".txt");
-               
+            for (i = 1; i <= 317; i++) {
+                f_iclones = new File("H:\\detected_clone_results\\iclones_"+schema+"\\revision-"+i+".txt");
+                //String clone_file = "H:\\detected_clone_results\\deckard_"+schema+"\\revision-" + i + "\\post_cluster_vdb_30_5_allg_0.85_30";
                 if (f_iclones.exists()) {
                      br2 = new BufferedReader(new FileReader(f_iclones));
                     st2 = br2.readLine();
@@ -53,7 +54,7 @@ public class ConnectToMySQL_iclones {
                         splited1 = st2.split("\\s+");
                         if (isInteger(splited1[1])) {
                             filename=splited1[2].replaceAll("\\\\", "/");
-                            query = "INSERT INTO `iclones_result` (`version`, `CloneClass`, `file_name`, `startline`, `endline`)"
+                            query = "INSERT INTO `clones_iclones` (`version`, `CloneClass`, `file_name`, `startline`, `endline`)"
                                     + " VALUES ('" + i + "', '" + cur_clone_class + "', '" + filename + "', '" + splited1[3] + "', '" + splited1[4] + "');";
                             System.out.println(query);
                             st.executeUpdate(query);

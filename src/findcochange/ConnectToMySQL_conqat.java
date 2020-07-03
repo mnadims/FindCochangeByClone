@@ -23,11 +23,11 @@ public class ConnectToMySQL_conqat {
             Class.forName(driverName);
 
             // Create a connection to the database
-            String serverName = "127.0.0.1";
+            String serverName = "127.0.0.1:3308";
 
-            String schema = "carol";
+            String schema = "qmailadmin";
 
-            String url = "jdbc:mysql://" + serverName + "/" + schema;
+            String url = "jdbc:mysql://" + serverName + "/cochange_" + schema;
 
             String username = "root";
 
@@ -45,9 +45,9 @@ public class ConnectToMySQL_conqat {
             Pattern p = Pattern.compile("\"([^\"]*)\"");
             conn = DriverManager.getConnection(url, username, password);
             Statement st = conn.createStatement();
-            for (i = 1; i <= 1; i++) {
+            for (i = 1; i <= 317; i++) {
                 //f_nicad = new File("data_files/nicad5_block_clones_class_results/version-"+i+"_blocks-blind-clones-0.30-classes.xml");
-                f_nicad = new File("E:\\01 USASK\\Programming @ USASK\\Netbeans_Projects\\Pre_recall_iClones\\data_files\\clones-gapped.xml");
+                f_nicad = new File("H:\\detected_clone_results\\conqat_qmailadmin\\revision-18\\clones.xml");
                 if (f_nicad.exists()) {
                     filedel = "DELETE FROM `temp_files`";
                     System.out.println(filedel);
@@ -67,10 +67,9 @@ public class ConnectToMySQL_conqat {
                             //System.out.println(fileid+", "+fileloc); 
                             //file_holder[Integer.parseInt(fileid)]=fileloc;
                             filein = "INSERT INTO `temp_files` (`id`, `filename`)"
-                                    + " VALUES ('" + fileid + "', '" + fileloc.substring(6) + "')";
+                                    + " VALUES ('" + fileid + "', '" + fileloc.replace("project/", "") + "')";
                             System.out.println(filein);
-                            st.executeUpdate(filein);
-                            
+                            st.executeUpdate(filein);                            
 
                         } 
                         else if(st2.length() > 5 && st2.substring(5, 10).equals("clone")) {
@@ -88,7 +87,7 @@ public class ConnectToMySQL_conqat {
                             sourceFileId = m.group(1);
                             System.out.println(startLine+", "+endLine+", "+sourceFileId); 
                             
-                            clonein = "INSERT INTO `conqat_result` (`version`, `CloneClass`, `file_name`, `startline`, `endline`)"
+                            clonein = "INSERT INTO `clones_conqat` (`version`, `CloneClass`, `file_name`, `startline`, `endline`)"
                                     + " VALUES ('" + i + "', '" + cur_clone_class + "', (SELECT `filename` FROM `temp_files` WHERE `id`='" + sourceFileId + "'), '" + startLine + "', '" + endLine + "')";
                             System.out.println(clonein);
                             st.executeUpdate(clonein);

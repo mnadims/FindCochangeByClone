@@ -8,14 +8,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-class Store_change {
+//class Store_change {
+//
+//    String filename;
+//    int startline;
+//    int endline;
+//}
 
-    String filename;
-    int startline;
-    int endline;
-}
-
-public class FindCochange_all {
+public class FindCochange_all_temp {
 
     public static void main(String[] args) throws Exception {
 
@@ -29,24 +29,24 @@ public class FindCochange_all {
         int k, duplicate = 0, comma_flg = 0;
         //Name of the Subject Systems    
         //String[] subject_systems = {"brlcad", "camellia", "carol", "ctags", "freecol", "jabref", "jedit", "qmailadmin"};
-        String[] subject_systems = {"ctags"};
-        int[] total_changes = {3517};
+        String[] subject_systems = {"freecol", "jedit"};
+        int[] total_changes = {22327, 11780};
         //total_changes: "brlcad=9805", "camellia=4333", "carol=12929", "ctags=3517", "freecol=22327", "jabref=19349", "jedit=11780", "qmailadmin=892"
         //int[] total_changes = {22327, 11780};
-        String[] clone_detector = {"cloneworks"};
+       String[] clone_detector = {"cloneworks"};
         //String[] clone_detector = {"ccfinder", "cloneworks", "conqat", "deckard_2_0", "iclones", "nicad5", "simcad", "simian"};   
-        String[] clone_types = {"type1", "type2blind", "type3pattern", "type3token"};
+        String[] clone_types = {"type3pattern", "type3token"};
         //String[] clone_types = {"type1", "type2blind", "type3pattern", "type3token"};
         //String[] clone_types = {"all"};
         String resultGrouping = "CloneClass"; //CloneClass or ClonePair
         int ss_sl = 0;
         for (String ss : subject_systems) {
-            ss = subject_systems[ss_sl];
+            //ss = subject_systems[ss_sl];
             //for (String ss : subject_systems) {
             //for (int num : numbers)  
             for (String cd : clone_detector) {
                 for (String clone_type : clone_types) {
-                     if (clone_type.equals("all")) {
+                    if (clone_type.equals("all")) {
                         clone_results_table = "clones_" + cd;
                         cochange_table="cc_" + cd;
                     } else {

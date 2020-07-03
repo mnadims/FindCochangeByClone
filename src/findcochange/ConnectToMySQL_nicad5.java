@@ -23,11 +23,11 @@ public class ConnectToMySQL_nicad5 {
             Class.forName(driverName);
 
             // Create a connection to the database
-            String serverName = "127.0.0.1";
+            String serverName = "127.0.0.1:3308";
 
-            String schema = "cochange_carol";
+            String schema = "qmailadmin";
 
-            String url = "jdbc:mysql://" + serverName + "/" + schema;
+            String url = "jdbc:mysql://" + serverName + "/cochange_" + schema;
 
             String username = "root";
 
@@ -45,9 +45,9 @@ public class ConnectToMySQL_nicad5 {
             Pattern p = Pattern.compile("\"([^\"]*)\"");
             conn = DriverManager.getConnection(url, username, password);
             Statement st = conn.createStatement();
-            for (i = 16; i <= 1700; i++) {
+            for (i = 1; i <= 317; i++) {
                 //f_nicad = new File("data_files/nicad5_block_clones_class_results/version-"+i+"_blocks-blind-clones-0.30-classes.xml");
-                f_nicad = new File("H:\\Detected_Clone_Results\\nicad5_carol_output\\version-"+i+"_blocks-blind-clones\\version-"+i+"_blocks-blind-clones-0.30-classes.xml");
+                f_nicad = new File("H:\\detected_clone_results\\nicad5_"+schema+"\\revision-"+i+"_blocks-blind-clones\\revision-"+i+"_blocks-blind-clones-0.30-classes.xml");
                 if (f_nicad.exists()) {
                     br2 = new BufferedReader(new FileReader(f_nicad));                
                     cur_clone_class="-1";
@@ -56,7 +56,7 @@ public class ConnectToMySQL_nicad5 {
                             Matcher m = p.matcher(st2);
                             m.find();
                             fileloc = m.group(1);
-                            filename = fileloc.replaceAll("/home/mnadims/subject_system/carol/versions/version-"+i+"/", "");
+                            filename = fileloc.replace("../subject_systems/"+schema+"/revision-"+i+"/", "").replace(".ifdefed", "");
                             /*if(i<10)
                                 filename=fileloc.substring(55);
                             else if(i<100)

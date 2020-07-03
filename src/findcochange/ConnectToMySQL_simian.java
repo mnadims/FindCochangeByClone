@@ -21,11 +21,11 @@ public class ConnectToMySQL_simian {
             Class.forName(driverName);
 
             // Create a connection to the database
-            String serverName = "localhost";
+            String serverName = "127.0.0.1:3308";
 
-            String schema = "jedit";
+            String schema = "qmailadmin";
 
-            String url = "jdbc:mysql://" + serverName + "/" + schema;
+            String url = "jdbc:mysql://" + serverName + "/cochange_" + schema;
 
             String username = "root";
 
@@ -44,8 +44,8 @@ public class ConnectToMySQL_simian {
             conn = DriverManager.getConnection(url, username, password);
             Statement st = conn.createStatement();
             //replace_str="E:\\Research_USASK\\Clone_detection_tools_compare\\Simian\\bin\\ctags_Versions\\version-2\\";
-            for (i = 3787; i <= 4001; i++) {
-                f_iclones = new File("H:\\Detected_Clone_Results\\simian_jedit_output\\simian_jedit_out_v" + i + ".txt");
+            for (i = 1; i <= 317; i++) {
+                f_iclones = new File("H:/detected_clone_results/simian_"+schema+"/revision-" + i + ".txt");
                 
                 if (f_iclones.exists()) {
                     br2 = new BufferedReader(new FileReader(f_iclones));
@@ -53,11 +53,11 @@ public class ConnectToMySQL_simian {
                     while ((st2 = br2.readLine()) != null) {
                         splited1 = st2.split("\\s+");
                         if (splited1[1].equals("Between")) {
-                            filename=splited1[7].substring(50);                        
+                            filename=splited1[7].replaceAll("\\\\", "/").replace("H:/subject_systems/"+schema+"/revision-" + i + "/", "");                        
                            
-                            filename=filename.replaceAll("\\\\", "/");
+                            //filename=filename
                             //System.out.println(filename);
-                            query = "INSERT INTO `simian_result` (`version`, `CloneClass`, `file_name`, `startline`, `endline`)"
+                            query = "INSERT INTO `clones_simian` (`version`, `CloneClass`, `file_name`, `startline`, `endline`)"
                                     + " VALUES ('" + i + "', '" + cur_clone_class + "', '" + filename + "', '" + splited1[3] + "', '" + splited1[5] + "');";
                             System.out.println(query);
                             st.executeUpdate(query);
