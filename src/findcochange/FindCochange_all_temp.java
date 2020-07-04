@@ -29,15 +29,15 @@ public class FindCochange_all_temp {
         int k, duplicate = 0, comma_flg = 0;
         //Name of the Subject Systems    
         //String[] subject_systems = {"brlcad", "camellia", "carol", "ctags", "freecol", "jabref", "jedit", "qmailadmin"};
-        String[] subject_systems = {"freecol", "jedit"};
+        String[] subject_systems = {"jedit"};
         int[] total_changes = {22327, 11780};
         //total_changes: "brlcad=9805", "camellia=4333", "carol=12929", "ctags=3517", "freecol=22327", "jabref=19349", "jedit=11780", "qmailadmin=892"
         //int[] total_changes = {22327, 11780};
-       String[] clone_detector = {"cloneworks"};
+       String[] clone_detector = {"duplo"};
         //String[] clone_detector = {"ccfinder", "cloneworks", "conqat", "deckard_2_0", "iclones", "nicad5", "simcad", "simian"};   
-        String[] clone_types = {"type3pattern", "type3token"};
+        //String[] clone_types = {"type3pattern", "type3token"};
         //String[] clone_types = {"type1", "type2blind", "type3pattern", "type3token"};
-        //String[] clone_types = {"all"};
+        String[] clone_types = {"all"};
         String resultGrouping = "CloneClass"; //CloneClass or ClonePair
         int ss_sl = 0;
         for (String ss : subject_systems) {
@@ -62,7 +62,7 @@ public class FindCochange_all_temp {
                         Class.forName(driverName);
 
                         // Create a connection to the database
-                        String serverName = "127.0.0.1";
+                        String serverName = "127.0.0.1:3308";
 
                         String schema = "cochange_" + ss;
 
@@ -86,6 +86,7 @@ public class FindCochange_all_temp {
                         int pr_version = 0, total_change = -1;
                         int change_sl = 1;
                         while ((st2 = br2.readLine()) != null) {
+                            System.out.println("Working: "+st2);
                             comma_flg = 0;
                             list_cochange = "";
                             splited1 = st2.split("\\s+");
@@ -121,7 +122,7 @@ public class FindCochange_all_temp {
                             used_clone = 0;
                             change_ptr = 0;
                             while (rs_detected.next()) {
-                                //System.out.println(rs_detected.getString("file_name")+", "+rs_detected.getInt("startline")+", "+rs_detected.getInt("endline"));
+                                System.out.println(rs_detected.getString("file_name")+", "+rs_detected.getInt("startline")+", "+rs_detected.getInt("endline"));
                                 cur_filename = rs_detected.getString("file_name");
                                 cur_startline = rs_detected.getInt("startline");
                                 cur_endline = rs_detected.getInt("endline");
